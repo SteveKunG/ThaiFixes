@@ -22,158 +22,39 @@
 
 package com.lion328.thaifixes;
 
-import com.lion328.thaifixes.config.ThaiFixesConfiguration;
-import com.lion328.thaifixes.coremod.CoremodSettings;
-import com.lion328.thaifixes.coremod.mapper.IClassMap;
-import com.lion328.thaifixes.renderer.IFontRenderer;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import java.util.Arrays;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.ModMetadata;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(name = ModInformation.NAME, modid = ModInformation.MODID, version = ModInformation.VERSION,
-        acceptedMinecraftVersions = ModInformation.MCVERSION, guiFactory = "com.lion328.thaifixes.config.gui.ThaiFixesGuiFactory")
+@Mod(name = ThaiFixes.NAME, modid = ThaiFixes.MOD_ID, version = ThaiFixes.VERSION, clientSideOnly = true)
 public class ThaiFixes
 {
+    public static final String VERSION = "4.9.0";
+    public static final String MOD_ID = "thaifixes";
+    public static final String NAME = "ThaiFixes";
+    public static Logger LOGGER = LogManager.getLogger("ThaiFixes");
 
-    private static Logger logger;
-
-    private FontRendererWrapper fontRendererWrapper;
-    private IFontRenderer currentRenderer;
-    private boolean disabled;
-
-    @Mod.EventHandler
+    @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
-        ThaiFixesConfiguration.init(event.getSuggestedConfigurationFile());
-        ThaiFixesConfiguration.syncConfig();
+        ThaiFixes.init(event.getModMetadata());
     }
 
-    @Mod.EventHandler
-    public void init(FMLInitializationEvent event)
+    private static void init(ModMetadata info)
     {
-        MinecraftForge.EVENT_BUS.register(this);
-
-        try
-        {
-            IClassMap map = CoremodSettings.getDefaultClassmap();
-
-            Class<?> mcClass = Class.forName(map.getClass("net/minecraft/client/Minecraft").getObfuscatedName().replace('/', '.'));
-            Method getMc = mcClass.getMethod(map.getClass("net/minecraft/client/Minecraft").getMethod("getMinecraft", "()Lnet/minecraft/client/Minecraft;"));
-
-            Field fontRendererObjField = mcClass.getDeclaredField(map.getClass("net/minecraft/client/Minecraft").getField("fontRendererObj"));
-            fontRendererObjField.setAccessible(true);
-
-            Object mc = getMc.invoke(null);
-            Object fontRenderer = fontRendererObjField.get(mc);
-
-            if (!(fontRenderer instanceof FontRendererWrapper))
-            {
-                getLogger().error("Current global FontRenderer object is not FontRendererWrapper (maybe another mod changed)");
-
-                return;
-            }
-
-            if (!FontRendererWrapper.class.getDeclaredField("PATCHED").getBoolean(null))
-            {
-                getLogger().error("Unpatched FontRendererWrapper, converting to default");
-
-                Class<?> fontRendererClass = Class.forName(map.getClass("net/minecraft/client/gui/FontRenderer").getObfuscatedName().replace('/', '.'));
-                Field[] fields = fontRendererClass.getDeclaredFields();
-
-                Constructor<?> constructor = fontRendererClass.getDeclaredConstructor();
-                constructor.setAccessible(true);
-
-                Field modifiersField = Field.class.getDeclaredField("modifiers");
-                modifiersField.setAccessible(true);
-
-                Object newFontRenderer = constructor.newInstance();
-
-                for (Field field : fields)
-                {
-                    field.setAccessible(true);
-                    modifiersField.set(field, field.getModifiers() & ~Modifier.FINAL);
-                    field.set(newFontRenderer, field.get(fontRenderer));
-                }
-
-                fontRendererObjField.set(mc, newFontRenderer);
-
-                return;
-            }
-
-            getLogger().info("FontRendererWrapper is successfully patched");
-
-            fontRendererWrapper = (FontRendererWrapper) fontRenderer;
-
-            reloadRenderer();
-        }
-        catch (Exception e)
-        {
-            getLogger().catching(e);
-        }
-    }
-
-    @SubscribeEvent
-    public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event)
-    {
-        if (event.getModID().equals(ModInformation.MODID))
-        {
-            ThaiFixesConfiguration.syncConfig();
-
-            try
-            {
-                reloadRenderer();
-            }
-            catch (InstantiationException | IllegalAccessException e)
-            {
-                getLogger().catching(e);
-            }
-        }
-    }
-
-    public void reloadRenderer() throws InstantiationException, IllegalAccessException
-    {
-        if (fontRendererWrapper == null)
-        {
-            return;
-        }
-
-        FontStyle fontStyle = ThaiFixesConfiguration.getFontStyle();
-
-        if (currentRenderer != null)
-        {
-            fontRendererWrapper.removeRenderer(currentRenderer);
-        }
-
-        if (!disabled && fontStyle != FontStyle.DISABLE)
-        {
-            currentRenderer = fontStyle.newInstance();
-            fontRendererWrapper.addRenderer(currentRenderer);
-
-            getLogger().info("Using " + fontStyle.getRendererClass().toString() + " as font renderer");
-        }
-        else
-        {
-            getLogger().info("ThaiFixes is disabled");
-        }
-    }
-
-    public static Logger getLogger()
-    {
-        if (logger == null)
-        {
-            logger = LogManager.getLogger("ThaiFixes");
-        }
-
-        return logger;
+        info.autogenerated = false;
+        info.modId = ThaiFixes.MOD_ID;
+        info.name = ThaiFixes.NAME;
+        info.version = ThaiFixes.VERSION;
+        info.url = "https://minecraft.lion328.com/thaifixes/";
+        info.description = "Improve Thai characters support in Minecraft.";
+        info.authorList = Arrays.asList("lion328", "SteveKunG");
+        info.credits = "PCXD, secretdataz";
     }
 }

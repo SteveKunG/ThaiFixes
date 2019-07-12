@@ -1,58 +1,62 @@
 buildscript {
     repositories {
         jcenter()
-        maven {
-            url = "http://files.minecraftforge.net/maven"
-        }
+        maven { url = "https://files.minecraftforge.net/maven" }
+        maven { url = "https://repo.spongepowered.org/maven" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
+        classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: "net.minecraftforge.gradle.forge"
+apply plugin: "org.spongepowered.mixin"
 
-apply plugin: 'java'
+version = project.version
+group = "com.lion328.thaifixes"
+archivesBaseName = "thaifixes"
+sourceCompatibility = targetCompatibility = 1.8
+compileJava.options.encoding = "UTF-8"
 
-compileJava {
-    options.encoding = 'UTF-8'
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+minecraft {
+    version = "${forge_version}"
+    runDir = "run"
+    mappings = "${mcp_mapping}"
+}
+
+configurations {
+    embed
+    implementation.extendsFrom(embed)
+}
+
+dependencies {
+    embed("org.spongepowered:mixin:0.7.11-SNAPSHOT") { transitive = false }
+}
+
+repositories {
+    // Mixin
+    maven {
+        url = "http://repo.spongepowered.org/maven/"
+    }
+}
+
+sourceSets {
+    main {
+        ext.refMap = "mixins.thaifixes.refmap.json"
+    }
 }
 
 jar {
+    from(configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }) {
+        exclude "LICENSE.txt", "META-INF/MANIFSET.MF", "META-INF/maven/**", "META-INF/*.RSA", "META-INF/*.SF"
+    }
+
     manifest {
-        attributes 'FMLCorePlugin': 'com.lion328.thaifixes.coremod.CoremodLoader'
-        attributes 'FMLCorePluginContainsFMLMod': 'true'
-    }
-}
-
-version = "4.8.1-1.12.2"
-group = "com.lion328.thaifixes"
-archivesBaseName = "thaifixes"
-
-minecraft {
-    version = "1.12.2-14.23.4.2764"
-    runDir = "run"
-
-    mappings = "snapshot_20171003"
-
-    replace "%VERSION%", project.version
-    replace "%MCVERSION%", project.minecraft.version
-    replaceIn "ModInformation.java"
-}
-
-processResources {
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
-
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-
-        expand 'version': project.version, 'mcversion': project.minecraft.version
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+        attributes("FMLCorePluginContainsFMLMod": "true",
+                   "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
+                   "MixinConfigs": "mixins.thaifixes.json",
+                   "ForceLoadAsMod": "true"
+        )
     }
 }

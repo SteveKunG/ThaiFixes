@@ -1,0 +1,15 @@
+{
+    "required": true,
+    "minVersion": "0.7.11",
+    "compatibilityLevel": "JAVA_8",
+    "package": "com.lion328.thaifixes.mixin",
+    "refmap": "mixins.thaifixes.refmap.json",
+    "target": "@env(DEFAULT)",
+    "mixins": [],
+    "client": [
+        "ThaiFontRendererMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}
