@@ -22,36 +22,92 @@
 
 package com.lion328.thaifixes;
 
-import net.minecraft.client.gui.fonts.IGlyphInfo;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dimdev.riftloader.listener.InitializationListener;
-import org.spongepowered.asm.launch.MixinBootstrap;
-import org.spongepowered.asm.mixin.Mixins;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 
-public class ThaiFixes implements InitializationListener
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceType;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
+
+public class ThaiFixes implements ModInitializer
 {
-
-    private static Logger logger;
-    public static Map<IGlyphInfo, Boolean> processingThaiChars = new ConcurrentHashMap<>();
+    private static final Logger LOGGER = LogManager.getLogger("ThaiFixes");
+    public static final Map<Character, OffsetConfigContainer.TexturedGlyphOffsetConfig> texturedGlyphOffsetMap = new HashMap<>();
 
     @Override
-    public void onInitialization()
+    public void onInitialize()
     {
-        MixinBootstrap.init();
-        Mixins.addConfiguration("mixins.thaifixes.json");
-    }
-
-    public static Logger getLogger()
-    {
-        if (logger == null)
+        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener()
         {
-            logger = LogManager.getLogger("ThaiFixes");
-        }
+            @Override
+            public Identifier getFabricId()
+            {
+                return new Identifier("thaifixes:offsets");
+            }
 
-        return logger;
+            @Override
+            public void apply(ResourceManager resourceManager)
+            {
+                ThaiFixes.LOGGER.info("Reloading ThaiFixes offset configurations.");
+                Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+                resourceManager.findResources("offsets", s -> s.endsWith(".json")).forEach(e ->
+                {
+                    if (!e.getNamespace().equals("thaifixes"))
+                    {
+                        return;
+                    }
+                    try
+                    {
+                        resourceManager.getAllResources(e).forEach(res ->
+                        {
+                            try
+                            {
+                                ThaiFixes.LOGGER.info("Reading ThaiFixes offset configuration file " + e.getNamespace() + ":" + e.getPath());
+                                InputStream is = res.getInputStream();
+                                OffsetConfigContainer container = JsonHelper.deserialize(gson, IOUtils.toString(is, StandardCharsets.UTF_8), OffsetConfigContainer.class);
+                                container.offsets.forEach(offset ->
+                                {
+                                    for (char c : offset.characters.toCharArray())
+                                    {
+                                        if (offset.textured != null)
+                                        {
+                                            texturedGlyphOffsetMap.put(c, offset.textured);
+                                        }
+                                    }
+                                });
+                            }
+                            catch (IOException ex)
+                            {
+                                ex.printStackTrace();
+                            }
+                            catch (JsonParseException jsonEx)
+                            {
+                                jsonEx.printStackTrace();
+                            }
+                        });
+                    }
+                    catch (IOException e1)
+                    {
+                        e1.printStackTrace();
+                    }
+                });
+                ThaiFixes.LOGGER.info("ThaiFixes is done reloading offset config.");
+            }
+        });
     }
 }

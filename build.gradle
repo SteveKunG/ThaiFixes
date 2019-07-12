@@ -1,50 +1,35 @@
-buildscript {
-    repositories {
-        jcenter()
-        maven { url 'https://www.dimdev.org/maven/' }
-        maven { url = 'http://repo.spongepowered.org/maven' }
-    }
-    dependencies {
-        classpath 'org.dimdev:ForgeGradle:2.3-SNAPSHOT'
-        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
+plugins {
+    id "fabric-loom" version "0.2.2-SNAPSHOT"
+    id "maven-publish"
+}
+
+def mcVersion = project.mc_version
+def version = project.version
+
+apply plugin: net.fabricmc.loom.LoomGradlePlugin
+archivesBaseName = "ThaiFixes"
+sourceCompatibility = targetCompatibility = 1.8
+
+minecraft {
+    refmapName = "thaifixes-refmap.json"
+}
+
+repositories {
+    maven {
+        url "https://minecraft.curseforge.com/api/maven"
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle.tweaker-client'
-apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'java'
-
-group 'com.lion328.thaifixes'
-version '5.0'
-archivesBaseName = 'thaifixes'
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-compileJava.options.encoding = 'UTF-8'
-
-repositories {
-    mavenCentral()
-    maven { url 'https://www.dimdev.org/maven/' }
+jar {
+    baseName = "ThaiFixes-" + mcVersion
 }
 
 dependencies {
-    implementation 'org.dimdev:rift:1.0.4-77:dev'
-}
+	minecraft "com.mojang:minecraft:1.14.3"
+    mappings "net.fabricmc:yarn:1.14.3+build.+"
+    modCompile "net.fabricmc:fabric-loader:0.4.8+build.+"
+    modCompile "net.fabricmc.fabric-api:fabric-api:0.3.0+build.+"
 
-minecraft {
-    version = '1.13'
-    mappings = 'snapshot_20180908'
-    runDir = 'run'
-    tweakClass = 'org.dimdev.riftloader.launch.RiftLoaderClientTweaker'
-}
-
-sourceSets {
-    main {
-        ext.refMap = 'mixins.thaifixes.refmap.json'
-    }
-}
-
-mixin {
-    defaultObfuscationEnv notch
+    modCompile "cloth-config:ClothConfig2:0.2.0"
+    modCompile "io.github.prospector.modmenu:ModMenu:1.6.2-92"
 }
