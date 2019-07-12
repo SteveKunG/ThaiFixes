@@ -1,23 +1,13 @@
-# eclipse
-bin
-*.launch
-.gradle_data
+# folder
 .settings
+.gradle
+bin
+build
+eclipse
+run
+
+# file
+*.launch
 .metadata
 .classpath
 .project
-
-# idea
-out
-*.ipr
-*.iws
-*.iml
-.idea
-
-# gradle
-build
-.gradle
-
-# other
-eclipse
-run

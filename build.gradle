@@ -17,7 +17,6 @@ version = project.version
 group = "com.lion328.thaifixes"
 archivesBaseName = "thaifixes"
 sourceCompatibility = targetCompatibility = 1.8
-compileJava.options.encoding = "UTF-8"
 
 minecraft {
     version = "${forge_version}"
