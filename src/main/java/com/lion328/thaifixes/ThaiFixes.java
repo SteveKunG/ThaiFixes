@@ -61,49 +61,49 @@ public class ThaiFixes implements ModInitializer
             }
 
             @Override
-            public void apply(ResourceManager resourceManager)
+            public void apply(ResourceManager manager)
             {
                 ThaiFixes.LOGGER.info("Reloading ThaiFixes offset configurations.");
                 Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-                resourceManager.findResources("offsets", s -> s.endsWith(".json")).forEach(e ->
+                manager.findResources("offsets", name -> name.endsWith(".json")).forEach(identifier ->
                 {
-                    if (!e.getNamespace().equals("thaifixes"))
+                    if (!identifier.getNamespace().equals("thaifixes"))
                     {
                         return;
                     }
                     try
                     {
-                        resourceManager.getAllResources(e).forEach(res ->
+                        manager.getAllResources(identifier).forEach(res ->
                         {
                             try
                             {
-                                ThaiFixes.LOGGER.info("Reading ThaiFixes offset configuration file " + e.getNamespace() + ":" + e.getPath());
+                                ThaiFixes.LOGGER.info("Reading ThaiFixes offset configuration file " + identifier.getNamespace() + ":" + identifier.getPath());
                                 InputStream is = res.getInputStream();
                                 OffsetConfigContainer container = JsonHelper.deserialize(gson, IOUtils.toString(is, StandardCharsets.UTF_8), OffsetConfigContainer.class);
                                 container.offsets.forEach(offset ->
                                 {
-                                    for (char c : offset.characters.toCharArray())
+                                    for (char ch : offset.characters.toCharArray())
                                     {
                                         if (offset.textured != null)
                                         {
-                                            texturedGlyphOffsetMap.put(c, offset.textured);
+                                            texturedGlyphOffsetMap.put(ch, offset.textured);
                                         }
                                     }
                                 });
                             }
-                            catch (IOException ex)
+                            catch (IOException e)
                             {
-                                ex.printStackTrace();
+                                e.printStackTrace();
                             }
-                            catch (JsonParseException jsonEx)
+                            catch (JsonParseException e)
                             {
-                                jsonEx.printStackTrace();
+                                e.printStackTrace();
                             }
                         });
                     }
-                    catch (IOException e1)
+                    catch (IOException e)
                     {
-                        e1.printStackTrace();
+                        e.printStackTrace();
                     }
                 });
                 ThaiFixes.LOGGER.info("ThaiFixes is done reloading offset config.");

@@ -20,9 +20,9 @@ public class GlyphProcessor
             MixinGlyphRenderer converted = (MixinGlyphRenderer)glyphRenderer;
             float posYShift = ThaiFixes.texturedGlyphOffsetMap.get(thaiFixesGlyph.getCharacters()).yOffset;
             float height = ThaiFixes.texturedGlyphOffsetMap.get(thaiFixesGlyph.getCharacters()).heightOffset;
-            float v0 = converted.thaiFixesVMin() + posYShift / 128.0f;
+            float v0 = converted.thaiFixesVMin() + posYShift / 128.0F;
             float y0 = converted.thaiFixesYMin() + posYShift;
-            return new GlyphRenderer(glyphRenderer.getId(), converted.thaiFixesUMin(), converted.thaiFixesUMax(), v0, v0 + height / 128.0f, converted.thaiFixesXMin() - thaiFixesGlyph.getRealAdvance(), converted.thaiFixesXMax() - thaiFixesGlyph.getRealAdvance(), y0, y0 + height);
+            return new GlyphRenderer(glyphRenderer.getId(), converted.thaiFixesUMin(), converted.thaiFixesUMax(), v0, v0 + height / 128.0F, converted.thaiFixesXMin() - thaiFixesGlyph.getRealAdvance(), converted.thaiFixesXMax() - thaiFixesGlyph.getRealAdvance(), y0, y0 + height);
         }
         else
         {
