@@ -1,15 +1,28 @@
 {
+    "schemaVersion": 1,
     "id": "thaifixes",
+    "version": "5.0.0",
     "name": "ThaiFixes",
     "description": "Make Thai language in Minecraft looks better",
-    "version": "5.0.0",
-    "side": "client",
-    "initializers": [
-        "com.lion328.thaifixes.ThaiFixes"
-    ],
-    "requires": {
+    "contact": {
+        "sources": "https://github.com/SteveKunG/ThaiFixes",
+        "issues": "https://github.com/SteveKunG/ThaiFixes/issues"
     },
-    "mixins": {
-        "client": "thaifixes.client.json"
+    "side": "client",
+    "environment": "client",
+    "entrypoints": {
+        "main": [
+            "com.lion328.thaifixes.ThaiFixes"
+        ]
+    },
+    "depends": {
+        "fabricloader": ">=0.4.8",
+        "fabric": "*"
+    },
+    "mixins": [
+        "mixins.thaifixes.json"
+    ],
+    "custom": {
+        "modmenu:clientsideOnly": true
     }
 }
