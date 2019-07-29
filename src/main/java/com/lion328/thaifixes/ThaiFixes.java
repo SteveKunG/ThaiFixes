@@ -38,7 +38,7 @@ public class ThaiFixes
     public static final String VERSION = "4.9.0";
     public static final String MOD_ID = "thaifixes";
     public static final String NAME = "ThaiFixes";
-    public static Logger LOGGER = LogManager.getLogger("ThaiFixes");
+    public static final Logger LOGGER = LogManager.getLogger("ThaiFixes");
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)

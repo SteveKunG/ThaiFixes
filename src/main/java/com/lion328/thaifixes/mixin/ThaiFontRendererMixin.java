@@ -34,6 +34,7 @@ import com.lion328.thaifixes.ThaiFixes;
 import com.lion328.thaifixes.ThaiUtils;
 
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 
 @Mixin(FontRenderer.class)
 public abstract class ThaiFontRendererMixin
@@ -83,16 +84,16 @@ public abstract class ThaiFontRendererMixin
             float posX = this.posX - ((charWidth - startTexcoordX) / 2.0F + 0.5F);
             float posY = this.posY + posYShift;
 
-            GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
-            GL11.glTexCoord2f(texcoordX / 256.0F, texcoordY / 256.0F);
-            GL11.glVertex3f(posX + skew, posY, 0.0F);
-            GL11.glTexCoord2f(texcoordX / 256.0F, (texcoordY + heightX2) / 256.0F);
-            GL11.glVertex3f(posX - skew, posY + height, 0.0F);
-            GL11.glTexCoord2f((texcoordX + texcoordXEnd) / 256.0F, texcoordY / 256.0F);
-            GL11.glVertex3f(posX + texcoordXEnd / 2.0F + skew, posY, 0.0F);
-            GL11.glTexCoord2f((texcoordX + texcoordXEnd) / 256.0F, (texcoordY + heightX2) / 256.0F);
-            GL11.glVertex3f(posX + texcoordXEnd / 2.0F - skew, posY + height, 0.0F);
-            GL11.glEnd();
+            GlStateManager.glBegin(GL11.GL_TRIANGLE_STRIP);
+            GlStateManager.glTexCoord2f(texcoordX / 256.0F, texcoordY / 256.0F);
+            GlStateManager.glVertex3f(posX + skew, posY, 0.0F);
+            GlStateManager.glTexCoord2f(texcoordX / 256.0F, (texcoordY + heightX2) / 256.0F);
+            GlStateManager.glVertex3f(posX - skew, posY + height, 0.0F);
+            GlStateManager.glTexCoord2f((texcoordX + texcoordXEnd) / 256.0F, texcoordY / 256.0F);
+            GlStateManager.glVertex3f(posX + texcoordXEnd / 2.0F + skew, posY, 0.0F);
+            GlStateManager.glTexCoord2f((texcoordX + texcoordXEnd) / 256.0F, (texcoordY + heightX2) / 256.0F);
+            GlStateManager.glVertex3f(posX + texcoordXEnd / 2.0F - skew, posY + height, 0.0F);
+            GlStateManager.glEnd();
             info.setReturnValue(0.0F);
         }
     }
