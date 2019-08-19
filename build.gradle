@@ -1,5 +1,5 @@
 plugins {
-    id "fabric-loom" version "0.2.4-SNAPSHOT"
+    id "fabric-loom" version "0.2.5-SNAPSHOT"
     id "maven-publish"
 }
 
@@ -7,28 +7,25 @@ def mcVersion = project.mc_version
 def version = project.version
 
 apply plugin: net.fabricmc.loom.LoomGradlePlugin
-archivesBaseName = "ThaiFixes"
+archivesBaseName = "ThaiFixes-" + mcVersion
 sourceCompatibility = targetCompatibility = 1.8
 
 minecraft {
-    refmapName = "thaifixes-refmap.json"
+    refmapName = "mixins.thaifixes.refmap.json"
 }
 
 repositories {
+    // Curse Forge
     maven {
         url "https://minecraft.curseforge.com/api/maven"
     }
 }
 
-jar {
-    baseName = "ThaiFixes-" + mcVersion
-}
-
 dependencies {
 	minecraft "com.mojang:minecraft:1.14.4"
     mappings "net.fabricmc:yarn:1.14.4+build.+"
-    modCompile "net.fabricmc:fabric-loader:0.4.8+build.+"
-    modCompile "net.fabricmc.fabric-api:fabric-api:0.3.0+build.+"
+    modApi "net.fabricmc:fabric-loader:0.4.8+build.+"
+    modApi "net.fabricmc.fabric-api:fabric-api:0.3.0+build.+"
 
-    modCompile "io.github.prospector.modmenu:ModMenu:1.6.3-95"
+    modImplementation "io.github.prospector:modmenu:1.7.9+build.118"
 }

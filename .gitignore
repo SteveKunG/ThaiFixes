@@ -1,14 +1,15 @@
 # folder
 .settings
 .gradle
-.idea
 bin
 build
-dependencies
-out
+eclipse
 run
 
 # file
+!gradlew.bat
+*.bat
+*.launch
+.metadata
 .classpath
 .project
-*.launch

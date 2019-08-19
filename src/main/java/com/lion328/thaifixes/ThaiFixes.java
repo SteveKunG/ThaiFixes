@@ -35,10 +35,12 @@ import org.apache.logging.log4j.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
+import com.lion328.thaifixes.OffsetConfigContainer.OffsetConfig;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
@@ -65,7 +67,8 @@ public class ThaiFixes implements ModInitializer
             {
                 ThaiFixes.LOGGER.info("Reloading ThaiFixes offset configurations.");
                 Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-                manager.findResources("offsets", name -> name.endsWith(".json")).forEach(identifier ->
+
+                for (Identifier identifier : manager.findResources("offsets", name -> name.endsWith(".json")))
                 {
                     if (!identifier.getNamespace().equals("thaifixes"))
                     {
@@ -73,23 +76,24 @@ public class ThaiFixes implements ModInitializer
                     }
                     try
                     {
-                        manager.getAllResources(identifier).forEach(res ->
+                        for (Resource resource : manager.getAllResources(identifier))
                         {
                             try
                             {
                                 ThaiFixes.LOGGER.info("Reading ThaiFixes offset configuration file " + identifier.getNamespace() + ":" + identifier.getPath());
-                                InputStream is = res.getInputStream();
-                                OffsetConfigContainer container = JsonHelper.deserialize(gson, IOUtils.toString(is, StandardCharsets.UTF_8), OffsetConfigContainer.class);
-                                container.offsets.forEach(offset ->
+                                InputStream input = resource.getInputStream();
+                                OffsetConfigContainer container = JsonHelper.deserialize(gson, IOUtils.toString(input, StandardCharsets.UTF_8), OffsetConfigContainer.class);
+
+                                for (OffsetConfig config : container.offsets)
                                 {
-                                    for (char ch : offset.characters.toCharArray())
+                                    for (char ch : config.characters.toCharArray())
                                     {
-                                        if (offset.textured != null)
+                                        if (config.textured != null)
                                         {
-                                            texturedGlyphOffsetMap.put(ch, offset.textured);
+                                            texturedGlyphOffsetMap.put(ch, config.textured);
                                         }
                                     }
-                                });
+                                }
                             }
                             catch (IOException e)
                             {
@@ -99,13 +103,13 @@ public class ThaiFixes implements ModInitializer
                             {
                                 e.printStackTrace();
                             }
-                        });
+                        }
                     }
                     catch (IOException e)
                     {
                         e.printStackTrace();
                     }
-                });
+                }
                 ThaiFixes.LOGGER.info("ThaiFixes is done reloading offset config.");
             }
         });
