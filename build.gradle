@@ -10,6 +10,8 @@ buildscript {
     }
 }
 
+def mcVersion = project.mc_version
+
 apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: "org.spongepowered.mixin"
 
@@ -22,6 +24,7 @@ minecraft {
     version = "${forge_version}"
     runDir = "run"
     mappings = "${mcp_mapping}"
+    makeObfSourceJar = false
 }
 
 configurations {
@@ -48,14 +51,14 @@ sourceSets {
 
 jar {
     from(configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }) {
-        exclude "LICENSE.txt", "META-INF/MANIFSET.MF", "META-INF/maven/**", "META-INF/*.RSA", "META-INF/*.SF"
+        exclude "LICENSE.txt", "META-INF/*.txt", "META-INF/MANIFSET.MF", "META-INF/maven/**", "META-INF/*.RSA", "META-INF/*.SF"
     }
 
     manifest {
-        attributes("FMLCorePluginContainsFMLMod": "true",
-                   "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
+        attributes("TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
                    "MixinConfigs": "mixins.thaifixes.json",
                    "ForceLoadAsMod": "true"
         )
     }
+    baseName = "thaifixes-" + mcVersion
 }
