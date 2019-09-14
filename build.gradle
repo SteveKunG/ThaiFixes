@@ -37,7 +37,6 @@ dependencies {
 }
 
 repositories {
-    // Mixin
     maven {
         url = "http://repo.spongepowered.org/maven/"
     }
