@@ -1,24 +1,31 @@
 buildscript {
     repositories {
         jcenter()
-        maven { url = "https://files.minecraftforge.net/maven" }
-        maven { url = "https://repo.spongepowered.org/maven" }
+        maven {
+            name "forge"
+            url "https://files.minecraftforge.net/maven"
+        }
+        maven {
+            name "sponge"
+            url "https://repo.spongepowered.org/maven"
+        }
     }
     dependencies {
-        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT"
         classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
     }
 }
 
-def mcVersion = project.mc_version
-
 apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: "org.spongepowered.mixin"
+
+def mcVersion = project.mc_version
 
 version = project.version
 group = "com.lion328.thaifixes"
 archivesBaseName = "thaifixes"
-sourceCompatibility = targetCompatibility = 1.8
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = 1.8
+compileJava.options.encoding = "UTF-8"
 
 minecraft {
     version = "${forge_version}"
@@ -38,7 +45,8 @@ dependencies {
 
 repositories {
     maven {
-        url = "http://repo.spongepowered.org/maven/"
+        name "sponge"
+        url "https://repo.spongepowered.org/maven/"
     }
 }
 
@@ -52,12 +60,13 @@ jar {
     from(configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }) {
         exclude "LICENSE.txt", "META-INF/*.txt", "META-INF/MANIFSET.MF", "META-INF/maven/**", "META-INF/*.RSA", "META-INF/*.SF"
     }
-
     manifest {
-        attributes("TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
+        attributes("FMLCorePluginContainsFMLMod": "true",
+                   "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
                    "MixinConfigs": "mixins.thaifixes.json",
                    "ForceLoadAsMod": "true"
         )
     }
+    exclude "club/**"
     baseName = "thaifixes-" + mcVersion
 }
