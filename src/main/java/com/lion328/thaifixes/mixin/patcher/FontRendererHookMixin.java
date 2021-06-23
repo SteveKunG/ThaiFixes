@@ -43,8 +43,8 @@ public abstract class FontRendererHookMixin
         this.loadMCPXTexture();
     }
 
-    @Inject(method = "renderUnicodeChar", remap = false, cancellable = true, at = @At("HEAD"))
-    private void renderUnicodeChar(char ch, boolean italic, CallbackInfoReturnable info)
+    @Inject(method = "renderChar", remap = false, cancellable = true, at = @At("HEAD"))
+    private void renderChar(char ch, boolean italic, CallbackInfoReturnable info)
     {
         if (this.isSupportedCharacter(ch))
         {
@@ -93,6 +93,7 @@ public abstract class FontRendererHookMixin
                 if (ThaiUtil.isSpecialThaiChar(ch))
                 {
                     cPosX -= this.thaiCharWidth[offset];
+                    
                     if (ThaiUtil.isUpperThaiChar(ch))
                     {
                         cPosY -= 7.0F;
@@ -101,6 +102,7 @@ public abstract class FontRendererHookMixin
                     {
                         cPosY += 2.0F;
                     }
+                    
                     if (ThaiUtil.isVeryLongTailThaiChar(this.lastChar))
                     {
                         cPosY -= 1.0F;

@@ -72,7 +72,7 @@ public abstract class FontRendererMixin
         }
     }
 
-    @Inject(method = "func_181559_a", cancellable = true, at = @At("HEAD"))
+    @Inject(method = "renderUnicodeChar", cancellable = true, at = @At("HEAD"))
     private void renderChars(char ch, boolean italic, CallbackInfoReturnable info)
     {
         if (this.isSupportedCharacter(ch))

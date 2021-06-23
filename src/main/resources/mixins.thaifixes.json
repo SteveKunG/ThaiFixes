@@ -7,7 +7,8 @@
     "plugin": "com.lion328.thaifixes.plugin.ThaiFixesMixinPlugin",
     "mixins": [
         "FontRendererMixin",
-        "FontRendererAccessor"
+        "FontRendererAccessor",
+        "patcher.FontRendererHookMixin"
     ],
     "injectors": {
         "defaultRequire": 1

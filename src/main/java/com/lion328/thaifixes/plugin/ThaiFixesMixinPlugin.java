@@ -34,10 +34,10 @@ public class ThaiFixesMixinPlugin implements IMixinConfigPlugin
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName)
     {
-        if (mixinClassName.equals("com.lion328.thaifixes.mixin.patcher.FontRendererHookMixin"))
-        {
-            return foundPatcher;
-        }
+//        if (mixinClassName.equals("com.lion328.thaifixes.mixin.patcher.FontRendererHookMixin"))
+//        {
+//            return foundPatcher;
+//        }
         return true;
     }
 
